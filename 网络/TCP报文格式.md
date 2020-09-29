@@ -1,6 +1,6 @@
 #### TCP报文结构
 
-![tcp报文结构图](D:\xp\doc\notes\blog\网络\TCP报文格式.jpg)
+![tcp报文结构图](D:\xp\doc\blog\网络\TCP报文格式.jpg)
 
 ##### 端口号
 
