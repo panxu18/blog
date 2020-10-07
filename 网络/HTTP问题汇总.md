@@ -23,7 +23,16 @@
    3. 303 see other POST重定向为GET。
    4. 304 not modified 当客户端附带If-Modified-Since 和 If-None-Match访问资源时，服务端资源没有修改。
    5. 307 temporary redirect POST重定向。
-   6. 
+4. 4xx：客户端问题
+   1. 400 bad request 请求内容有问题。
+   2. 401 unauthorized 
+   3. 403 forbidden 拒绝访问，拒绝原因在body中。
+   4. 412 precomdition failed 提前失败。
+
+##### HTTP和HTTPS的区别
+
+1. 报文：HTTP协议是超文本传输协议，信息是明文传输。HTTPS是加密传输。
+2. 端口：HTTP使用80端口，HTTPS使用403端口。
 
 ##### HTTPS请求过程
 
@@ -47,3 +56,24 @@
 2. 查找服务端证书的发布机构，如果不是根证书就继续递归下去直到拿到根证书。
 3. 使用根证书校验上一层证书的签名，再拿上一层证书校验更上一层的证书。
 4. 最终可以验证服务端证书是否可信。
+
+##### cookie和Session区别
+
+1. cookie数据存放在客户的浏览器上，session数据放在服务器上。
+2. cookie不是很安全，别人可以分析存放在本地的cookie并进行cookie欺骗，考虑到安全应当使用session。
+3. session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能，考虑到减轻服务器性能方面，应当使用cookie。
+4. 单个cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。
+5. 可以考虑将登陆信息等重要信息存放为session，其他信息如果需要保留，可以放在cookie中。
+
+##### Get和Post的区别
+
+1. 浏览器中Get请求会被缓存，Get请求不带body。
+2. 接口中Get请求表示获取资源或者资源列表，Post请求表示创建资源。
+3. 安全性：私密数据需要使用Post传输。
+4. 编码：URL中会使用urlencode，Post中请求可以通过Content-Type定义body格式。
+5. Post请求在部分浏览器器中会将请求头和请求体分别发送。
+
+##### CSRF攻击
+
+1. 攻击者在自己的网页中向服务端发送请求时浏览器会带上用户的cookie，服务端只认cookie，无法分别是谁发出的请求。
+2. 解决办法：利用攻击者无法访问cookie内容这个点进行防范，用户登录时生成一个token存在cookie中，向服务器发送请求是需要带上这个token，服务器校验请求中token和cookie中的token是否一致。
