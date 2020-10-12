@@ -25,7 +25,7 @@
    5. 307 temporary redirect POST重定向。
 4. 4xx：客户端问题
    1. 400 bad request 请求内容有问题。
-   2. 401 unauthorized 
+   2. 401 unauthorized 因权限问题无法访问，原因都不想告诉客户端。
    3. 403 forbidden 拒绝访问，拒绝原因在body中。
    4. 412 precomdition failed 提前失败。
 
@@ -77,3 +77,18 @@
 
 1. 攻击者在自己的网页中向服务端发送请求时浏览器会带上用户的cookie，服务端只认cookie，无法分别是谁发出的请求。
 2. 解决办法：利用攻击者无法访问cookie内容这个点进行防范，用户登录时生成一个token存在cookie中，向服务器发送请求是需要带上这个token，服务器校验请求中token和cookie中的token是否一致。
+
+##### keep-alive作用
+
+1. HTTP/1.0中加入`Connection: keep-alive`请求头告诉对方不要关闭连接。
+2. HTTP/1.1中默认保持长连接，如果要关闭长连接需要加上`Connection: close`请求头。
+3. 服务端可以设置keep-alive超时时间当连接唱过指定时间会主动关闭，以及最大请求数当请求超过指定次数会主动关闭连接。
+
+##### 请求头
+
+1. content-length: 可以确定带传输内容的字节长度。
+2. transfer-encoding：传输编码
+   1. chunked：表示输出的内容长度不能确定，把要发送的数据切块传输，每个分块包含：长度值、数据、结尾\r\n。最后一个分块的长度必须为0。
+3. content-encoding：内容编码，通常是指对实体内容进行压缩编码，目的是优化传输。
+4. 
+

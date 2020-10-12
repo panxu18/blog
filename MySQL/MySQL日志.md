@@ -19,12 +19,12 @@ binlog属于MySQL Server层，又称为归档日志，属于路积极日志，�
 #### redo log和binlog的区别
 
 - redo log是InnoDB层面的，binlog属于MySQL Server层面的。
-- redo log是物理日志，记录该数据也更新的内容；binlog是逻辑日志，记录这个更新语句的原始逻辑。
+- redo log是物理日志，记录该数据更新的内容；binlog是逻辑日志，记录这个更新语句的原始逻辑。
 - redo log是循环写，日志空间大小定；binlog是追加写，当一份日志写到一定大小时会更换下一个文件，不会覆盖。
 
 #### undo log
 
-undo log保证事务的一致性，如果事务执行了一半就结束了，但执行过程中已经修改了数据，为了保证事务的原子性，就需要把数据恢复为原来的样子，所以引入了undolog来提供回滚功能。undo log是逻辑日志，当delete一条记录是，undo log中会对应一条insert记录，当update一条记录是，他会记录一条对应相反的updte记录。
+undo log保证事务的原子性，如果事务执行了一半就结束了，但执行过程中已经修改了数据，为了保证事务的原子性，就需要把数据恢复为原来的样子，所以引入了undolog来提供回滚功能。undo log是逻辑日志，当delete一条记录是，undo log中会对应一条insert记录，当update一条记录是，他会记录一条对应相反的updte记录。
 
 undo log还能实现多版本并发控制（MVCC），当用户读取一行记录的时候，如果该记录被其他事务占用，当前事务可以通过undolog读取之前的行信息，以此实现非锁定读。
 
