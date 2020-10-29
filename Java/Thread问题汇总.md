@@ -1,6 +1,6 @@
 ##### 线程池参数
 
-1. corePoolSize：
+1. corePoolSize：设置大小
 2. maximumPoolSize：
 3. keepAliveTime:
 4. unit:
@@ -16,11 +16,11 @@
    3. DiscardPolicy：丢弃任务不返回异常。
    4. DiscardOldestPolicy：丢弃之前的任务。
 
-##### ThreadPool中keepAliveTime作用
+##### 线程池创建
 
-1. 控制非核心线程最长空闲的时间，如果超过这个时间非核心线程会被销毁。
-2. 调用`allowCoreThreadTimeOut()`设置允许核心线程空闲超时之后，`keepAliveTime`也能用于销毁空闲的核心线程。
-3. 可以在运行时调用`setKeepAliveTime()`重新设置超时时间。
+##### 核心线程大小设置
+
+##### 线程池中单线程处理超时怎么处理
 
 ##### 线程池状态
 
@@ -29,6 +29,14 @@
 3. STOP：不接受新任务，不处理已添加任务，并且中断正在处理的任务。
 4. TIDYING：所有任务已终止，执行狗子函数`terminated()`。
 5. TERMINATED：`terminated()`执行完成后，线程池终止。
+
+##### ThreadPool中keepAliveTime作用
+
+1. 控制非核心线程最长空闲的时间，如果超过这个时间非核心线程会被销毁。
+2. 调用`allowCoreThreadTimeOut()`设置允许核心线程空闲超时之后，`keepAliveTime`也能用于销毁空闲的核心线程。
+3. 可以在运行时调用`setKeepAliveTime()`重新设置超时时间。
+
+##### 线程池怎么实现
 
 ##### 线程状态
 

@@ -20,6 +20,10 @@
    2. 数据量大了就是用dict。
    3. 使用两个hash表ht0，ht1，ht1在扩容时使用。
    4. 使用渐进式rehash，在对ht0进行访问时同时将其rehash到ht1，将rehash时间分摊到每次访问上。
+      1. 为`ht[1]`分配空间，让字典同时持有`ht[0]`和`ht[1]`两个哈希表。
+      2. 将`rehashindex`的值设置为`0`，表示rehash工作正式开始。
+      3. 在rehash期间，每次对字典执行增删改查操作时，程序除了执行指定的操作以外，还会顺带将`ht[0]`哈希表在`rehashindex`索引上的所有键值对rehash到`ht[1]`，当rehash工作完成以后，`rehashindex`的值`+1`。
+      4. 随着字典操作的不断执行，最终会在某一时刻`ht[0]`的所有键值对都会被rehash到`ht[1]`，这时将`rehashindex`的值设置为`-1`，表示rehash操作结束。
 4. set
 5. zset
    1. 使用hash表用来进行根据成员查找分数的操作。
@@ -66,7 +70,7 @@
 
 ##### 分布式锁简单实现
 
-1. 加锁
+1. 加锁：主要是保证setnx和expire的原子性。
 
    ```java
    public static boolean tryLock(Jedis jedis, String lockKey, String requestId, int expireTime) {
@@ -74,7 +78,7 @@
    }
    ```
 
-2. 解锁
+2. 解锁：通过lua脚本保证原子性，且通过requestId防止锁误删。
 
    ```java
    public static boolean releaseDistributedLock(Jedis jedis, String lockKey, String requestId) {
@@ -83,6 +87,12 @@
        return RELEASE_SUCCESS.equals(jedis.eval(script, Arrays.asList(lockKey), Arrays.asList(requestId)));
    }
    ```
+
+##### 如何设计分布式锁
+
+1. 严格互斥性：一般的redis锁无法保证严格的互斥，如果没有及时续锁会导致一锁多占，以及在主从切换时也会导致一锁多占。
+2. 可用性：redis锁通过维心跳保持锁，可能有异常用户进程持续占有锁，因此需要安全释放锁的机制。
+3. 切换效率：当进程持有的锁需要被重新调度时，持有者可以主动删除锁节点，但持有者发生异常，新进程需要重新抢锁，就需要等原来的锁过期之后才有机会抢占成功。
 
 ##### 缓冲穿透、击穿、雪崩
 
@@ -108,5 +118,31 @@
 ##### 主从切换
 
 1. 主从切换是指某个master不可用时，他的其中一个从节点升级为master的操作。
-2. 
 
+##### Redis 为什么可以保证线程安全
+
+redis实际上是采用了线程封闭的观念，把任务封闭在一个线程，自然避免了线程安全问题。
+
+##### 什么lua脚本结合redis命令可以实现原子性
+
+Redis 服务器会单线程原子性执行 lua 脚本，保证 lua 脚本在处理的过程中不会被任意其它请求打断。
+
+##### 获取某一前缀的所有key
+
+1. 使用key，可以一次返回所有符合条件的key，不能限制查询个数，使用遍历的方式查找满足条件的key，性能开销大。
+
+   ```bash
+   keys pattern*   //
+   keys *pattern*  //
+   keys pattern??
+   ```
+
+2. 使用scan,SCAN命令每次被调用后，都会向用户返回一个新的游标，用户在下次迭代时需要使用这个新游标作为SCAN命令的游标参数，以此来延续之前的迭代过程。
+
+   ```bash
+   SCAN cursor [MATCH pattern] [COUNT count]
+   ```
+
+##### RDB bgsave的过程中，如果有新的值插入，会不会被持久化
+
+不会,RDB持久化的过程使用，为了节省内存，使用了copy on write 的策略，父进程的修改对fork进程不可见。

@@ -53,3 +53,28 @@
 
 1. 没有竞争时使用CAS对`baseCount`计数。
 2. 有竞争是使用CounterCell计数，每个线程在CounterCell数组中随机选择一个CounterCell。CounterCell是LongAdder的简单版。
+
+##### 集合类的继承结构
+
+1. `Collection`
+
+   1. `List`
+   2. `Queue`
+   3. `Set`
+
+2. `Map`
+
+   1. `ConcurrentMap`
+
+   2. `SortedMap`
+
+   3. `AbastractMap`
+
+   4. `LinkedHashMap`
+
+   5. `HashMap`
+
+   6. `Hashtable`
+
+##### 编译期注解和运行时注解区别
+

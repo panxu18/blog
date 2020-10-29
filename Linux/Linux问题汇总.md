@@ -10,3 +10,11 @@
 netstat -ap | grep 8080
 ```
 
+##### 查找当前目录下一个月以前创建的文件，并压缩到指定文件夹
+
+```bash
+find -type -f -mtime -30 | xargs tar -czf des.tar.gz
+```
+
+1. -exec 只能根据结果依次执行，每个文件查找执行以下-exec后面的命令。
+2. xargs 将所有查找结果一起作为后面命令的参数，只执行一次。

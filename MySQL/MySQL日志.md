@@ -40,7 +40,28 @@ undo log还能实现多版本并发控制（MVCC），当用户读取一行记�
 
 ### InnoDB数据恢复
 
-redo log会记录所有事务的操作，未提交的事务，和回滚的了的事务都会记录在redo log中，所以在恢复时需要先将所有事务的修改全部重做，然后通过undo log回滚那些为提交的事务。因为恢复需要使用到undo日志，所以需要在记录redo log之前需要将undo log持久化，为了简化流程，InnoDB将undo log也看做是数据，对undo log的操作也写入redo log，这样就可以把undo log当成数据缓存在内存，然后在恢复的时候根据redo log恢复undo log。
+redo log会记录所有事务的操作，未提交的事务，和回滚的了的事务都会记录在redo log中，所以在恢复时需要先将所有事务的修改全部重做，然后通过undo log回滚那些未提交的事务。因为恢复需要使用到undo日志，所以需要在记录redo log之前需要将undo log持久化，为了简化流程，InnoDB将undo log也看做是数据，对undo log的操作也写入redo log，这样就可以把undo log当成数据缓存在内存，然后在恢复的时候根据redo log恢复undo log。
+
+##### redo log的两阶段提交
+
+1. 两阶段提交
+   1. prepare阶段，SQL执行成功，并生成事务ID以及redo和undo内存日志，此阶段审查的redolog只记录事务的操作日志，没记录提交日志。
+   2. 写入binlog，先调用write()将binlog写入内存，然后调用fsync()写入磁盘。
+   3. commit阶段，在redolog中记录此事务的提交日志，增加commit标签。
+
+2. 恢复过程
+
+   1. 顺序扫描redolog，如果碰到commit的redolog直接提交。
+
+   2. 如果只有prepare，根据事务id去binlog找对应事务的提交记录，如果有记录就提交事务，否则回滚事务。
+
+      
+
+      
+
+参考 https://segmentfault.com/a/1190000023897572
+
+
 
 
 
