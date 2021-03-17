@@ -18,3 +18,13 @@ find -type -f -mtime -30 | xargs tar -czf des.tar.gz
 
 1. -exec 只能根据结果依次执行，每个文件查找执行以下-exec后面的命令。
 2. xargs 将所有查找结果一起作为后面命令的参数，只执行一次。
+
+##### 内核自动升级
+
+``` bash
+# 禁止内核升级
+apt-mark hold linux-image-generic linux-headers-generic
+# 允许内核升级
+apt-mark unhold linux-image-generic linux-headers-generic
+```
+
