@@ -28,3 +28,18 @@ apt-mark hold linux-image-generic linux-headers-generic
 apt-mark unhold linux-image-generic linux-headers-generic
 ```
 
+##### update-alternatives
+
+update-alternatives用于在多个同功能的软件，或软件的多个不同版本间选择。
+
+```bash
+# 参数形式
+# link是在/usr/bin/,/usr/local/bin/等默认PATH搜索目录
+# name是在/etc/alternatives目录中的链接名
+# path是真正的可执行程序的位置,可以在任何位置
+# priority是优先级
+update-alternatives --install /usr/bin/java java /opt/jdk/java8
+
+```
+
+- 
